@@ -1,72 +1,67 @@
-# Descomplicando GitOps no Kubernetes com Argo CD 🚀
+# 🏗️ Implementação do Padrão App-of-Apps no Argo CD
 
-Este repositório contém os exercícios e manifestos práticos realizados durante o estudo de GitOps, utilizando o Argo CD para gerenciar o ciclo de vida de aplicações em um cluster Kind.
+Este projeto utiliza o padrão arquitetural App-of-Apps, uma estratégia avançada de GitOps que permite gerenciar múltiplas aplicações a partir de um único ponto de entrada.
 
-## 🛠️ Tecnologias Utilizadas
+## 🧐 O que é o App-of-Apps?
 
-    Kubernetes (Kind): Cluster local rodando em containers Docker.
+Em vez de configurar manualmente cada microsserviço no painel do Argo CD, criamos uma aplicação "Pai" (Root App). Esta aplicação monitora um diretório no Git que contém os manifestos de outras aplicações "Filhas".
 
-    Argo CD: Ferramenta de Continuous Delivery declarativa para Kubernetes.
+Vantagens observadas:
 
-    Git: Fonte da verdade para as configurações do cluster.
+    Automação Total: Ao adicionar um novo arquivo YAML na pasta monitorada, o Argo CD provisiona a nova aplicação automaticamente.
 
-    Helm: Gerenciador de pacotes para Kubernetes.
+    Consistência: Garante que todo o cluster siga a mesma revisão do Git (targetRevision).
 
-## 📋 Jornada de Implementação
-1. Configuração do Ambiente
+    Escalabilidade: Facilita o gerenciamento de dezenas ou centenas de aplicações sem intervenção manual na interface.
 
-O cluster foi criado utilizando o Kind. Para conectar o terminal ao cluster, exportamos a configuração necessária:
+## 📁 Estrutura de Diretórios Implementada
+
+A organização dos arquivos seguiu a hierarquia necessária para que o Argo CD mapeasse os caminhos corretamente:
+Plaintext
+```
+└── applications/
+    ├── app-of-apps.yaml      # Manifesto da aplicação "Pai"
+    └── app-of-apps/          # Diretório monitorado (Caminho da verdade)
+        ├── giropops-senhas.yaml
+        └── random-logger.yaml
+```
+## ⚙️ Configuração do Manifesto RaizO
+O arquivo app-of-apps.yaml foi configurado com os seguintes parâmetros críticos::
+
+    Repo URL: https://github.com/JessicaApBueno/descomplicando-gitops-no-kubernetes-argocd
+
+    Path: applications/app-of-apps (Caminho relativo à raiz do repositório).
+
+    Sync Policy:
+
+        Automated: Sincronização automática de mudanças no Git.
+
+        Prune: Remoção de recursos deletados no repositório.
+
+        SelfHeal: Correção automática de desvios manuais no cluster.
+
+🚀 Como reproduzir a implantação
+
+Para subir todo o ecossistema de aplicações de uma vez, basta aplicar o manifesto pai:
 Bash
 
-kind export kubeconfig --name kind
+kubectl apply -f applications/app-of-apps.yaml
 
-2. Instalação do Argo CD
+Após este comando, o Argo CD iniciará a cascata de sincronização:
 
-Criamos um namespace dedicado e aplicamos os manifestos oficiais:
-Bash
+    Sincroniza o app-of-apps.
 
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+    Identifica os arquivos na subpasta.
 
-3. Acesso ao Painel e Autenticação
+    Cria e sincroniza o giropops-senhas e o random-logger.
 
-Para acessar a interface Web localmente, utilizamos o redirecionamento de porta:
-Bash
+✅ Resultados Alcançados
 
-kubectl port-forward svc/argocd-server -n argocd 8080:443
+    Cluster Saudável: Todas as aplicações atingiram o estado Healthy.
 
-    Usuário: admin
+    Sincronia Garantida: O estado do cluster reflete fielmente a branch feat/day2.
 
-    Senha: Recuperada via Secret do Kubernetes e decodificada de Base64.
+    Resiliência: O sistema está configurado para auto-correção, mantendo a conformidade do ambiente.
+``
 
-4. Estratégia de Branching
-
-Trabalhamos com o conceito de branches para novas funcionalidades:
-
-    Criada a branch feat/day2 para o desenvolvimento da aplicação de senhas.
-
-    Utilizado Personal Access Token (PAT) do GitHub para autenticação segura entre o Argo CD e este repositório privado/público.
-
-## 🚀 Aplicação: Giropops-Senhas
-
-A aplicação principal foi implantada utilizando um arquivo de definição do Argo CD (Application).
-
-Destaques do Manifesto:
-
-    Namespace Automático: Configurado CreateNamespace=true nas syncOptions.
-
-    Self-Healing: Ativado para garantir que mudanças manuais no cluster sejam sobrescritas pelo que está no Git.
-
-    Prune: Ativado para remover recursos do cluster que foram deletados no repositório.
-
-Como visualizar os recursos:
-Bash
-
-kubectl get all -n giropops-senhas
-
-📸 Evidências
-
-O sistema está operando com sucesso, com todos os Pods (Redis e App) em estado Running e sincronizados via Helm.
-<img width="1359" height="688" alt="image" src="https://github.com/user-attachments/assets/b0e569de-1860-45b6-b3d7-7e95b90d6d08" />
-<img width="1342" height="688" alt="image" src="https://github.com/user-attachments/assets/24ae9c35-4650-4d57-927f-132835d3b92a" />
-
+<img width="1131" height="643" alt="image" src="https://github.com/user-attachments/assets/1f7322f7-5a67-4bdd-99b6-faa42b654f68" />
