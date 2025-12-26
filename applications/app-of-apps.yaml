@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: "https://github.com/JessicaApBueno/descomplicando-gitops-no-kubernetes-argocd"
     targetRevision: feat/day2
-    path: app-of-apps
+    path: applications/app-of-apps
     helm: {}
   destination:
     namespace: app-of-apps
