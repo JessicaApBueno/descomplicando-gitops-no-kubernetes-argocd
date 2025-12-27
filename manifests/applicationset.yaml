@@ -4,30 +4,26 @@ metadata:
   name: meu-primeiro-app-set
   namespace: argocd
 spec:
-  goTemplate: true
+  goTemplate: true # Como isso está TRUE, as variáveis precisam de um PONTO .
   goTemplateOptions: ["missingkey=error"]
   generators:
     - git:
-        # O Argo vai ler o repositório
         repoURL: https://github.com/JessicaApBueno/descomplicando-gitops-no-kubernetes-argocd.git
         revision: feat/day3
         directories:
-          # Ele vai olhar cada pasta dentro de 'apps' e criar um App para cada uma
           - path: applicationset/apps/*
   template:
     metadata:
-      # O nome da app será o nome da pasta (ex: giropops-senhas)
-      name: '{{path.basename}}'
+      name: '{{.path.basename}}' # Adicionado o PONTO
     spec:
       project: default
       source:
         repoURL: https://github.com/JessicaApBueno/descomplicando-gitops-no-kubernetes-argocd.git
         targetRevision: feat/day3
-        path: '{{path}}'
+        path: '{{.path}}' # Adicionado o PONTO
       destination:
         server: https://kubernetes.default.svc
-        # Vai criar um namespace com o nome da app automaticamente
-        namespace: '{{path.basename}}'
+        namespace: '{{.path.basename}}' # Adicionado o PONTO
       syncPolicy:
         automated:
           prune: true
