@@ -4,7 +4,7 @@ metadata:
   name: meu-primeiro-app-set
   namespace: argocd
 spec:
-  goTemplate: true # Como isso está TRUE, as variáveis precisam de um PONTO .
+  goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
     - git:
@@ -14,16 +14,16 @@ spec:
           - path: applicationset/apps/*
   template:
     metadata:
-      name: '{{.path.basename}}' # Adicionado o PONTO
+      name: '{{.path.basename}}'
     spec:
       project: default
       source:
         repoURL: https://github.com/JessicaApBueno/descomplicando-gitops-no-kubernetes-argocd.git
         targetRevision: feat/day3
-        path: '{{.path}}' # Adicionado o PONTO
+        path: '{{.path}}/helm' 
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{.path.basename}}' # Adicionado o PONTO
+        namespace: '{{.path.basename}}'
       syncPolicy:
         automated:
           prune: true
