@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: meu-primeiro-app-set
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        # O Argo vai ler o repositório
+        repoURL: https://github.com/JessicaApBueno/descomplicando-gitops-no-kubernetes-argocd.git
+        revision: feat/day3
+        directories:
+          # Ele vai olhar cada pasta dentro de 'apps' e criar um App para cada uma
+          - path: applicationset/apps/*
+  template:
+    metadata:
+      # O nome da app será o nome da pasta (ex: giropops-senhas)
+      name: '{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/JessicaApBueno/descomplicando-gitops-no-kubernetes-argocd.git
+        targetRevision: feat/day3
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        # Vai criar um namespace com o nome da app automaticamente
+        namespace: '{{path.basename}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
