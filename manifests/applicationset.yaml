@@ -20,7 +20,7 @@ spec:
       source:
         repoURL: https://github.com/JessicaApBueno/descomplicando-gitops-no-kubernetes-argocd.git
         targetRevision: feat/day3
-        path: '{{.path}}/helm' 
+        path: '{{.path}}/helm' # Caminho para onde estão os Charts das apps
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{.path.basename}}'
