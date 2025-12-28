@@ -20,9 +20,8 @@ spec:
       source:
         repoURL: https://github.com/JessicaApBueno/descomplicando-gitops-no-kubernetes-argocd.git
         targetRevision: feat/day3
-        # O Argo entra na pasta descoberta (giropops-senhas ou random-logger) 
-        # e depois acessa a subpasta helm para achar o Chart.yaml
-        path: '{{.path}}/helm' 
+        # CORREÇÃO AQUI: .path.path extrai apenas o texto do caminho
+        path: '{{.path.path}}/helm' 
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{.path.basename}}'
