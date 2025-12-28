@@ -66,7 +66,11 @@ kubectl delete pod -n argocd -l app.kubernetes.io/name=argocd-repo-server
 ```
 kubectl describe applicationset meu-primeiro-app-set -n argocd
 ```
-![alt text](image.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
+<img width="1366" height="690" alt="image" src="https://github.com/user-attachments/assets/5beaf314-2359-4dfe-9fa9-c832761fec1e" />
+
+<img width="1357" height="685" alt="image" src="https://github.com/user-attachments/assets/5b273490-8b63-4e33-b44f-09ef50c04659" />
+
+<img width="1357" height="684" alt="image" src="https://github.com/user-attachments/assets/b0c557e1-f69f-4235-9f93-dcfcded64969" />
+
+
 **Documentação gerada por Jéssica Aparecida Bueno durante o treinamento "Descomplicando GitOps no Kubernetes com ArgoCD".**
